@@ -26,7 +26,7 @@ for (ii in seq_along(dataRaw)) {
       } else {
         x[2] 
       }}) %>% unlist(),
-    codes=lapply(country, function(x) { x[1] }) %>% unlist()
+    code=lapply(country, function(x) { x[1] }) %>% unlist()
   ))
 }
 
@@ -88,3 +88,4 @@ result <- result[order(group, team)]
 
 fwrite(result, file = paste0("bettingOdds", format(Sys.Date(), "%Y%m%d"), ".csv"), sep = ";")
 write.table(as.data.frame(result), paste0("bettingOdds", format(Sys.Date(), "%Y%m%d"), ".csv"), quote = FALSE, row.names = FALSE, sep = ";")
+  
