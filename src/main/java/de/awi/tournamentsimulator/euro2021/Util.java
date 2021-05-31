@@ -24,8 +24,7 @@ public class Util {
     static Team calcWinner(final Team team1, final Team team2, final Random random) {
         if (isFirstTeamWinner(team1, team2, random)) {
             return team1;
-        }
-        else {
+        } else {
             return team2;
         }
     }

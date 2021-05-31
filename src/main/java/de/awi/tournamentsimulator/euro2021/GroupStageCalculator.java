@@ -28,21 +28,18 @@ public class GroupStageCalculator {
         calcPoints(teams.get(1), teams.get(2));
 
         teams.sort((team1, team2) -> compareTeams(team1, team2));
-        IntStream.rangeClosed(0,3).forEach(idx -> teams.get(idx).groupStage.standing = idx + 1);
+        IntStream.rangeClosed(0, 3).forEach(idx -> teams.get(idx).groupStage.standing = idx + 1);
     }
 
     private int compareTeams(final Team team1, final Team team2) {
         if (team1.groupStage.points < team2.groupStage.points) {
             return 1;
-        }
-        else if (team1.groupStage.points > team2.groupStage.points) {
+        } else if (team1.groupStage.points > team2.groupStage.points) {
             return -1;
-        }
-        else {
+        } else {
             if (Util.isFirstTeamWinner(team1, team2, random)) {
                 return -1;
-            }
-            else {
+            } else {
                 return 1;
             }
         }
@@ -52,8 +49,7 @@ public class GroupStageCalculator {
     private void calcPoints(final Team team1, final Team team2) {
         if (Util.isFirstTeamWinner(team1, team2, random)) {
             team1.groupStage.points += 3;
-        }
-        else {
+        } else {
             team2.groupStage.points += 3;
         }
     }

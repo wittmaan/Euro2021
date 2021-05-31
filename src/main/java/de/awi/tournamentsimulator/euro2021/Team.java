@@ -5,9 +5,8 @@ import java.util.Objects;
 public class Team {
     final String name;
     final String group;
-    Double ability;
     final Double probability;
-
+    Double ability;
     GroupStage groupStage = new GroupStage(0);
     KnockoutStage knockoutStage = new KnockoutStage();
 
@@ -41,7 +40,10 @@ public class Team {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(name, group);
+    }
+
+    public Double getProbability() {
+        return probability;
     }
 }

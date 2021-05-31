@@ -16,7 +16,7 @@ public class TournamentSimulator {
     private final Set<String> groups = new HashSet<>();
     private final Random random;
     private final String dateString;
-    private List<Team> teams;
+    private final List<Team> teams;
     private Map<KnockoutStageRoundName, Map<KnockoutStageMatch, Integer>> knockoutStageMatches;
     private Map<GroupStageResult, Integer> groupStageResult;
 
@@ -114,14 +114,10 @@ public class TournamentSimulator {
         Team team3GroupE = filterTeamByGroupStanding(GroupName.E.name(), 3);
         Team team3GroupF = filterTeamByGroupStanding(GroupName.F.name(), 3);
 
-        List<Team> teams3GroupDEF = Arrays.asList(team3GroupD, team3GroupE, team3GroupF);
-        Team team3GroupDEF = teams3GroupDEF.get(random.nextInt(teams3GroupDEF.size()));
-        List<Team> teams3GroupADEF = Arrays.asList(team3GroupA, team3GroupD, team3GroupE, team3GroupF);
-        Team team3GroupADEF = teams3GroupADEF.get(random.nextInt(teams3GroupADEF.size()));
-        List<Team> teams3GroupABC = Arrays.asList(team3GroupA, team3GroupB, team3GroupC);
-        Team team3GroupABC = teams3GroupABC.get(random.nextInt(teams3GroupABC.size()));
-        List<Team> teams3GroupABCD = Arrays.asList(team3GroupA, team3GroupB, team3GroupC, team3GroupD);
-        Team team3GroupABCD = teams3GroupABCD.get(random.nextInt(teams3GroupABCD.size()));
+        Team team3GroupDEF = getTeamWithHighestProbability(Arrays.asList(team3GroupD, team3GroupE, team3GroupF));
+        Team team3GroupADEF = getTeamWithHighestProbability(Arrays.asList(team3GroupA, team3GroupD, team3GroupE, team3GroupF));
+        Team team3GroupABC = getTeamWithHighestProbability(Arrays.asList(team3GroupA, team3GroupB, team3GroupC));
+        Team team3GroupABCD = getTeamWithHighestProbability(Arrays.asList(team3GroupA, team3GroupB, team3GroupC, team3GroupD));
 
         updateKnockoutStageRound(team1GroupA, KnockoutStageRoundName.RoundOf16);
         updateKnockoutStageRound(team2GroupA, KnockoutStageRoundName.RoundOf16);
@@ -179,6 +175,13 @@ public class TournamentSimulator {
 
         Team teamWinner = calcKnockoutStageWinner(teamFinal1, teamFinal2, KnockoutStageRoundName.Final);
         teamWinner.knockoutStage.countWinner++;
+    }
+
+    private Team getTeamWithHighestProbability(List<Team> teams) {
+        return teams
+                .stream()
+                .max(Comparator.comparing(Team::getProbability))
+                .orElseThrow(NoSuchElementException::new);
     }
 
     private Team calcKnockoutStageWinner(final Team team1, final Team team2, KnockoutStageRoundName stageRoundName) {

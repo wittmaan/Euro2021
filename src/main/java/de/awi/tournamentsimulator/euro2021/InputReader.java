@@ -42,8 +42,7 @@ public class InputReader {
                     log.debug("added this team: " + team);
                 }
             }
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             log.error(e.getMessage());
         }
     }
