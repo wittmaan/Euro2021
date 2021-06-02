@@ -27,7 +27,7 @@ public class GroupStageCalculator {
         calcPoints(teams.get(3), teams.get(0));
         calcPoints(teams.get(1), teams.get(2));
 
-        teams.sort((team1, team2) -> compareTeams(team1, team2));
+        teams.sort(this::compareTeams);
         IntStream.rangeClosed(0, 3).forEach(idx -> teams.get(idx).groupStage.standing = idx + 1);
     }
 

@@ -114,10 +114,10 @@ public class TournamentSimulator {
         Team team3GroupE = filterTeamByGroupStanding(GroupName.E.name(), 3);
         Team team3GroupF = filterTeamByGroupStanding(GroupName.F.name(), 3);
 
-        Team team3GroupDEF = getTeamWithHighestProbability(Arrays.asList(team3GroupD, team3GroupE, team3GroupF));
-        Team team3GroupADEF = getTeamWithHighestProbability(Arrays.asList(team3GroupA, team3GroupD, team3GroupE, team3GroupF));
-        Team team3GroupABC = getTeamWithHighestProbability(Arrays.asList(team3GroupA, team3GroupB, team3GroupC));
-        Team team3GroupABCD = getTeamWithHighestProbability(Arrays.asList(team3GroupA, team3GroupB, team3GroupC, team3GroupD));
+        Team team3GroupDEF = getTeamByProbability(Arrays.asList(team3GroupD, team3GroupE, team3GroupF));
+        Team team3GroupADEF = getTeamByProbability(Arrays.asList(team3GroupA, team3GroupD, team3GroupE, team3GroupF));
+        Team team3GroupABC = getTeamByProbability(Arrays.asList(team3GroupA, team3GroupB, team3GroupC));
+        Team team3GroupABCD = getTeamByProbability(Arrays.asList(team3GroupA, team3GroupB, team3GroupC, team3GroupD));
 
         updateKnockoutStageRound(team1GroupA, KnockoutStageRoundName.RoundOf16);
         updateKnockoutStageRound(team2GroupA, KnockoutStageRoundName.RoundOf16);
@@ -177,7 +177,7 @@ public class TournamentSimulator {
         teamWinner.knockoutStage.countWinner++;
     }
 
-    private Team getTeamWithHighestProbability(List<Team> teams) {
+    private Team getTeamByProbability(List<Team> teams) {
         return teams
                 .stream()
                 .max(Comparator.comparing(Team::getProbability))
@@ -191,7 +191,7 @@ public class TournamentSimulator {
         }
 
         KnockoutStageMatch match = new KnockoutStageMatch(team1, team2);
-        matches.merge(match, 1, (a, b) -> a + b);
+        matches.merge(match, 1, Integer::sum);
         knockoutStageMatches.put(stageRoundName, matches);
 
         return Util.calcWinner(team1, team2, random);
@@ -226,7 +226,7 @@ public class TournamentSimulator {
                 teamsInGroup.stream().filter(t -> t.groupStage.standing == 2).collect(Collectors.toList()).get(0),
                 teamsInGroup.stream().filter(t -> t.groupStage.standing == 3).collect(Collectors.toList()).get(0),
                 teamsInGroup.stream().filter(t -> t.groupStage.standing == 4).collect(Collectors.toList()).get(0));
-        groupStageResult.merge(result, 1, (a, b) -> a + b);
+        groupStageResult.merge(result, 1, Integer::sum);
     }
 
     private void writeResult() {

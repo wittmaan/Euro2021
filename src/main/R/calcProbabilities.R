@@ -40,5 +40,5 @@ dat[, logOdds := rowMeans(logit(probs), na.rm = TRUE)]
 dat[, probabilities := invLogit(logOdds)]
 
 fwrite(dat[, .(code, group, logOdds, probabilities)], "probabilites20210531.csv", sep = ";")
-
+  
 

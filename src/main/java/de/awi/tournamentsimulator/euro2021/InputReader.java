@@ -29,7 +29,7 @@ public class InputReader {
 
                 final String teamName = array[0];
                 final String group = array[1];
-                final Double probability = Double.valueOf(array[3]);
+                final double probability = Double.parseDouble(array[3]);
 
                 Double ability = Math.exp(probability);
 //                if (ability < Util.ABILITY_CUTOFF) {
