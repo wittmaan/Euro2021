@@ -114,6 +114,7 @@ public class TournamentSimulator {
         Team team3GroupE = filterTeamByGroupStanding(GroupName.E.name(), 3);
         Team team3GroupF = filterTeamByGroupStanding(GroupName.F.name(), 3);
 
+        // TODO: 2021/06/04 It could happen, that the one team enters twice the next round as best third...
         Team team3GroupDEF = getTeamByProbability(Arrays.asList(team3GroupD, team3GroupE, team3GroupF));
         Team team3GroupADEF = getTeamByProbability(Arrays.asList(team3GroupA, team3GroupD, team3GroupE, team3GroupF));
         Team team3GroupABC = getTeamByProbability(Arrays.asList(team3GroupA, team3GroupB, team3GroupC));
