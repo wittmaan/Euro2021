@@ -8,4 +8,4 @@ here is my attempt to do some predictions for the UEFA Euro 2021:
 3. Run the simulations via the given java program using probabilites2021xxxx.csv as input.
 4. Copy all csv-files to the app folder and view the results in the shiny app.
 
-This app is also running on shinyapps.io: https://wittmaan.shinyapps.io/FIFA_WORLD_CUP_2018_Prediction/
+This app is also running on shinyapps.io: https://wittmann.shinyapps.io/UEFA_Euro_2021_Prediction/

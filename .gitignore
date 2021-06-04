@@ -54,3 +54,5 @@ vignettes/*.pdf
 /target/
 
 *.csv
+
+**/rsconnect/*
