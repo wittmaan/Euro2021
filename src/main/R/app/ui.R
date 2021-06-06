@@ -40,7 +40,7 @@ shinyUI(navbarPage(
              p('Winning probabilities in pairwise comparisons of all UEFA Euro 2021 teams.'), 
              #br(),
              p('For example see the rightmost column of the top row: the probability of England beating Denmark is estimated
-             as 72.9 %.'),
+             as 71.3 %.'),
              uiOutput("ui_heatmap")),  
     tabPanel('Bookmaker consensus rating',
              p('UEFA Euro 2021 winning probabilities from the bookmaker consensus rating'),

@@ -12,13 +12,13 @@ options(RCHART_WIDTH = 800)
 
 logit <- function(x) log(x/(1-x))
 
-datOdds <- fread("bettingOdds20210531.csv")
+datOdds <- fread("bettingOdds20210606.csv")
 datOdds <- datOdds[order(`Bet365`)]
 
-teamResult <- fread("teamResults20210531.csv")
+teamResult <- fread("teamResults20210606.csv")
 
-groupStageResult <- fread("groupStageResult20210531.csv")
-knockoutStageResult <- fread("knockoutStageResult20210531.csv")
+groupStageResult <- fread("groupStageResult20210606.csv")
+knockoutStageResult <- fread("knockoutStageResult20210606.csv")
 
 datResult <- teamResult[datOdds, on = c("code", "group")]
 datResult[, probability := round(pWinning*100.0, digits=4)]

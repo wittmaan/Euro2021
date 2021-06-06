@@ -114,11 +114,10 @@ public class TournamentSimulator {
         Team team3GroupE = filterTeamByGroupStanding(GroupName.E.name(), 3);
         Team team3GroupF = filterTeamByGroupStanding(GroupName.F.name(), 3);
 
-        // TODO: 2021/06/04 It could happen, that the one team enters twice the next round as best third...
-        Team team3GroupDEF = getTeamByProbability(Arrays.asList(team3GroupD, team3GroupE, team3GroupF));
-        Team team3GroupADEF = getTeamByProbability(Arrays.asList(team3GroupA, team3GroupD, team3GroupE, team3GroupF));
-        Team team3GroupABC = getTeamByProbability(Arrays.asList(team3GroupA, team3GroupB, team3GroupC));
-        Team team3GroupABCD = getTeamByProbability(Arrays.asList(team3GroupA, team3GroupB, team3GroupC, team3GroupD));
+        Team team3GroupDEF = getTeamByProbability(Arrays.asList(team3GroupD, team3GroupE, team3GroupF), null);
+        Team team3GroupADEF = getTeamByProbability(Arrays.asList(team3GroupA, team3GroupD, team3GroupE, team3GroupF), Arrays.asList(team3GroupDEF));
+        Team team3GroupABC = getTeamByProbability(Arrays.asList(team3GroupA, team3GroupB, team3GroupC), Arrays.asList(team3GroupDEF, team3GroupADEF));
+        Team team3GroupABCD = getTeamByProbability(Arrays.asList(team3GroupA, team3GroupB, team3GroupC, team3GroupD), Arrays.asList(team3GroupDEF, team3GroupADEF, team3GroupABC));
 
         updateKnockoutStageRound(team1GroupA, KnockoutStageRoundName.RoundOf16);
         updateKnockoutStageRound(team2GroupA, KnockoutStageRoundName.RoundOf16);
@@ -178,8 +177,17 @@ public class TournamentSimulator {
         teamWinner.knockoutStage.countWinner++;
     }
 
-    private Team getTeamByProbability(List<Team> teams) {
-        return teams
+    private Team getTeamByProbability(final List<Team> teams, List<Team> teamsToExclude) {
+        List<Team> teamsForSelection = new ArrayList<Team>(teams);
+
+        if (teamsToExclude != null) {
+            teamsForSelection = teamsForSelection
+                    .stream()
+                    .filter(team -> !teamsToExclude.contains(team))
+                    .collect(Collectors.toList());
+        }
+
+        return teamsForSelection
                 .stream()
                 .max(Comparator.comparing(Team::getProbability))
                 .orElseThrow(NoSuchElementException::new);

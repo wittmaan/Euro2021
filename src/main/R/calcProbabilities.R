@@ -2,7 +2,7 @@
 library(data.table)
 library(dplyr)
 
-dat <- fread("bettingOdds20210531.csv")
+dat <- fread("bettingOdds20210606.csv")
 
 calcOdds <- function(quotedOdds, delta=1) {
   (quotedOdds - 1) / delta
@@ -39,6 +39,6 @@ invLogit <- function(p) { exp(p) / (1 + exp(p)) }
 dat[, logOdds := rowMeans(logit(probs), na.rm = TRUE)]
 dat[, probabilities := invLogit(logOdds)]
 
-fwrite(dat[, .(code, group, logOdds, probabilities)], "probabilites20210531.csv", sep = ";")
+fwrite(dat[, .(code, group, logOdds, probabilities)], "probabilites20210606.csv", sep = ";")
   
 
