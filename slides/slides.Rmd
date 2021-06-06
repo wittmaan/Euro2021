@@ -1,0 +1,212 @@
+---
+title: Predictive bookmaker consensus for FIFA World Cup 2018
+author: Andreas Wittmann
+date: 17.05.2018
+output:
+  revealjs::revealjs_presentation:
+    theme: simple
+    css: custom.css
+    self_contained: false
+    reveal_plugins: ["notes"]
+---
+
+## Motivation
+
+> Football is a simple game. Twenty-two men chase a ball for 90 minutes and at the end, the Germans always win.
+>
+> -- <cite>Gary Lineker</cite>
+
+* Prediction of the FIFA World Cup 2018 based on bookmakers odds.
+* Other approaches use historical data based on previous games.
+* Bookmakers odds are an assessment of the expected chance to win a specific tournament.
+* Bookmakers have try to rate the teams correctly to earn their money.
+
+
+## Steps to forecast the winner of the 2018 FIFA World Cup:
+
+1. Obtain the long-term winning odds from online bookmakers (https://www.oddschecker.com/football/world-cup/winner).
+2. Transform the odds to winning probabilities.
+3. The odds infer the ability of a team. Using these abilites pairwise winning probabities can be calculated.
+4. Using the pairwise winning probabilites the whole tournament can be simulated 100,000 times.
+5. Therefore we can obtain relative frequencies for each team winning the tournament.
+
+
+## Online Bookmakers (sample)
+
+```{r, echo=FALSE, warning=FALSE}
+library(data.table)
+library(knitr)
+
+dat <- fread("bettingOdds20180515.csv")
+```
+
+```{r, echo=FALSE}
+kable(dat[1:6,colnames(dat)[1:8], with=FALSE]) 
+```
+
+
+## Bookmaker quoted odds
+
+The quoted odds for Team $i$ are calculated as:
+
+$\textit{quoted odds}_i = \textit{odds}_i \cdot \delta + 1$ 
+
+* $+1$ represents the *sake*, the bettor always receives his original stake back.
+* Odds 4/1 (four-to-one), the bettor can make 400 <code>&euro;</code> profit on 100 <code>&euro;</code> sake.
+* One would receive a total of 500 <code>&euro;</code> in return upon winning.
+* $\delta < 1$ is the proportion of bets that is actually paid out by the bookmakers.
+* The *overround* is the remaining proportion $1 - \delta$, which is the main basis of the bookmakers profits.
+
+
+## Odds
+
+Calculate the odds for Team $i$ as:
+
+$\textit{odds}_i = (\textit{quoted odds}_i - 1) / \delta$ 
+
+Using this we can calculate the probabilities as
+
+$p_i = 1 - \frac{\textit{odds}_i}{1 + \textit{odds}_i}$
+
+* It is assumed that each bookmakers $\delta$ is constant across the various teams in the tournament.
+* The $\delta$ can be chosen such that $\sum_i p_i = 1$.
+* We have to find $\delta$ and remove the overround.
+
+## Overround Example
+
+```{r,echo=FALSE,warning=FALSE}
+calcOdds <- function(quotedOdds, delta=1) {
+  (quotedOdds - 1) / delta
+}
+
+calcProbs <- function(quotedOdds, delta=1) {
+  odds <- calcOdds(quotedOdds, delta)
+  1 - odds / (1 + odds)
+}
+
+calcDelta <- function(quotedOdds) {
+uniroot(function(delta) {
+    sum(calcProbs(quotedOdds, delta)) - 1
+  }, interval = c(-0.0001, 1.0))$root 
+}
+```
+
+
+```{r}
+quotedOdds <- c(1.6, 2.3, 16, 30)
+delta <- calcDelta(quotedOdds)
+delta
+calcOdds(quotedOdds, delta)
+calcProbs(quotedOdds, delta)
+```
+
+
+## Aggregation
+
+* Aggregate the overround-adjusted odds across the bookmakers 
+* Transformation to the logit scale for averaging:
+
+$\text{logit}(p_i) = \frac{1}{n_b} \sum_{b=1}^{n_b} \text{logit}(p_{i,b})$
+
+* There are $b=1, \ldots, n_b$ bookmakers.
+* $p_{i,b}$ represents the winning probability of team $i$ from bookmaker $b$.
+* $\text{logit}$ represents the logit-function $\log(x/(1-x))$.
+* $\text{logit}(p_i)$ can be transfered back using the inverse logit-function $\exp(p) / (1 + \exp(p))$.
+
+
+<!-- https://books.google.de/books?id=NyqAAwAAQBAJ&pg=PT16&lpg=PT16&dq=quoted+odds+stake&source=bl&ots=TjwMfIcfTq&sig=dmtuY5rM0TNdw3-m8_yUr-a0eHo&hl=de&sa=X&ved=0ahUKEwj1t6H-1ofbAhXKDcAKHQg_CD0Q6AEIbjAG#v=onepage&q=quoted%20odds%20stake&f=false -->
+
+
+## Pairwise comparisons
+
+* The odds without overround infer the ability of a team. 
+* Using these abilites pairwise winning probabities can be calculated.
+* The *Bradley-Terry-Modell* can be used to calculate the winning probability that team A strikes team B as 
+
+$P(A \ \text{strikes} \ B) = \frac{\text{ability}(A)}{(\text{ability}(A) + \text{ability}(B))}$
+
+## Inverse Tournament
+
+Simulation based on team-specific abilities is used:
+
+1. Using the team abilities, pairwise winning probabilities can be derived for each possible match.
+2. The whole tournament can be simulated to see which teams proceeeds to which stage and which team finally wins.
+3. Run the tournament simulation sufficiently often (about 100.000 times) to obtain the relative frequencies for each team winning the tournament.
+
+An iterative approach is used to find team abilities which closely match the boomaker consensus probabilities.
+
+<!--
+Furthermore:   
+
+* Using the abilites the probability for each team to reach round of 16, quarter finals, semi finals, finals and winning the tournament can be calculated.
+* The probabilities for the final standings of each group after the group phase can be estimated.
+-->
+
+<!-- # Literature -->
+
+## Aggregated Input-Data 
+
+```{r, echo=FALSE, warning=FALSE}
+library(data.table)
+library(knitr)
+
+dat <- fread("probabilites20180515.csv")
+```
+
+```{r, echo=FALSE}
+kable(dat[1:12]) 
+```
+
+## Implementation Details (1)
+
+```java
+public static final int N_SIMULATIONS = 100000;
+public static final int N_ITERATIONS = 500;
+
+for (int i = 0; i < Util.N_ITERATIONS; i++) {
+    for (int j = 0; j < Util.N_SIMULATIONS; j++) {
+        simulateGroupStage();
+        simulateKnockoutStage();
+    }
+
+    if (checkTeamAbility(i)) {
+        break;
+    }
+}
+```
+
+## Implementation Details (2)
+
+```java
+// checkTeamAbility(i)
+
+final List<Team> teams
+
+teams.forEach(team -> {
+    final double calculatedProbability = 
+        team.knockoutStage.countWinner.doubleValue() / Util.N_SIMULATIONS;
+    final double diff = team.probability - calculatedProbability;
+    team.ability += diff / 2.0;
+
+    this.errorSum += Math.abs(team.probability - calculatedProbability);
+});
+```
+
+## Implementation Details (3)
+
+* Use *ability = exp(probability)* as intial ability value.
+* Use some relative target error (relative target error = 0.002 takes 141 iterations)
+* Count final group standings, how often which teams reaches which round, count winners, ...
+* Calculate relative frequencies.
+
+## Literature
+
+* Predictive bookmaker consensus model for the UEFA Euro 2016 (https://www2.uibk.ac.at/downloads/c4041030/wpaper/2016-15.pdf)
+
+
+<!--
+<aside class="notes" data-markdown="">
+<em>These </em> are * the speaker notes
+</aside>
+-->
+

@@ -1,0 +1,42 @@
+<style type="text/css">
+p { text-align: left; }
+
+.reveal ul {
+    width: 900px;
+    font-size: 90%;
+}
+
+.reveal strong { color: lawngreen;
+                 font-style: normal;
+                 font-weight: bold;
+}
+
+.reveal h1 { 
+    font-style: normal;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+body {
+    overflow-x: hidden;
+    overflow-y: auto !important;
+    line-height: inherit;
+}
+
+.reveal strong { 
+    color: lawngreen;
+    font-style: normal;
+    font-weight: bold;
+}
+
+
+.reveal section img { 
+    background: rgba(255, 255, 255, 0.12); 
+    border: 2px solid #eeeeee;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15) 
+}
+
+
+</style>
+
+
